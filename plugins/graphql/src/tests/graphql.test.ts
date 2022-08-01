@@ -19,11 +19,17 @@ describe('querying the graphql API', () => {
         picture: 'https://frontside.com/computers/logo.svg',
       },
       system: {
-        name: 'oriental-plastic-tuna',
+        displayName: 'Oriental Plastic Tuna',
       },
       subComponents: [{
         name: 'lighting'
-      }]
+      }],
+      consumes: [{
+        name: 'github-enterprise',
+      }],
+      provides: [{
+        name: 'backstage-backend-api',
+      }],
     })
   });
 
@@ -154,8 +160,12 @@ describe('querying the graphql API', () => {
     ).toMatchObject({
       entity: {
         name: 'backstage',
-        providesApi: [{ name: 'rerum-fugiat' }],
-        consumesApi: [{ name: 'repellat-sed' }]
+        providesApi: [{
+          name: 'backstage-backend-api',
+        }],
+        consumesApi: expect.arrayContaining([{
+          name: 'github-enterprise',
+        }])
       }
     });
   });

@@ -4,12 +4,10 @@ import type { JsonObject } from '@backstage/types';
 import type { Operation } from 'effection';
 import type { Node } from '@frontside/graphgen';
 
-import { strict as assert } from 'assert';
-
 import { PromiseOrValue } from '@envelop/core';
 import { createApp } from '..';
 
-import { Factory, World, createFactory, Component } from './factory';
+import { Factory, World, createFactory } from './factory';
 
 export interface GraphQLHarness {
   query(query: string): Operation<JsonObject>;
@@ -48,11 +46,12 @@ export function createGraphQLAPI(): GraphQLHarness {
     },
     create(...params) {
       let node = factory.create(...params);
+
       return stringifyEntityRef({
         kind: node.__typename,
         name: node.name
       });
-    }
+    },
   };
 }
 
@@ -91,19 +90,19 @@ export function nodeToEntity(node: Node & World[keyof World]): Entity {
     apiVersion: 'backstage.io/v1beta1',
     metadata: {
       name,
-      namepsace: 'default',
+      namespace: 'default',
       description: node.description,
     }
   } as Entity;
   if (node.__typename === "Component") {
-      let { type, lifecycle } = node;
+    let { type, lifecycle } = node;
       return {
         ...entity,
         spec: { type, lifecycle },
         relations: relations({
           ownedBy: node.owner,
           partOf: node.system,
-          subComponents: node.subComponents,
+          hasPart: node.subComponents,
           consumesApi: node.consumes,
           providesApi: node.provides,
         }),
